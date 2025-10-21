@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder"
+    "dist": "dotenv -- electron-builder"
   },
   "build": {
     "appId": "com.yourdomain.myelectronapp",
@@ -14,16 +14,10 @@
     "directories": {
       "output": "dist"
     },
+    "afterPack": "./scripts/fix-reactive-framework.js",
+    "afterSign": "./scripts/notarize.js",
+    "afterAllArtifactBuild": "./scripts/staple-artifacts.js",
     "compression": "store",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "exelearning",
-        "repo": "exelearning-web",
-        "releaseType": "prerelease",
-        "private": true
-      }
-    ],
     "mac": {
       "category": "public.app-category.utilities",
       "target": [
@@ -31,7 +25,10 @@
         "zip"
       ],
       "hardenedRuntime": true,
-      "gatekeeperAssess": false
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.inherit.plist",
+      "entitlementsLoginHelper": "build/entitlements.mac.loginhelper.plist"
     },
     "win": {
       "target": []
@@ -41,8 +38,10 @@
     }
   },
   "devDependencies": {
+    "@electron/notarize": "^2.5.0",
+    "dotenv-cli": "^7.4.2",
     "electron": "36.4.0",
-    "electron-builder": "26.0.16"
+    "electron-builder": "^26.0.12"
   },
   "engines": {
     "yarn": ">=1.22.22"
